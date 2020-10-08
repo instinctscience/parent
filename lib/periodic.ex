@@ -345,6 +345,11 @@ defmodule Periodic do
     {:noreply, state}
   end
 
+  def handle_info({:EXIT, _from, {:name_conflict, key, _registry, pid}}, state) do
+    Logger.info("Horde is killing #{inspect(pid)} due to conflict, key: #{inspect(key)}")
+    {:stop, :normal, state}
+  end
+
   @impl GenServer
   def handle_call({:tick, opts}, from, %{mode: :manual} = state) do
     caller = if Keyword.get(opts, :await_job?), do: from, else: nil
